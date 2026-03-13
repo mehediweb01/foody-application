@@ -1,0 +1,29 @@
+# node 
+node_modules
+
+# bun
+bun.lockb
+
+# pnpm
+pnpm-lock.yaml
+
+# yarn
+yarn.lock
+
+# npm
+package-lock.json
+
+# .env
+.env
+
+# dist
+dist
+
+# build
+build
+
+# output
+output
+
+# logs
+logs
