@@ -1,5 +1,6 @@
-import { getCollection } from "../config/database";
+import { getCollection } from "../config/database.js";
 
+// validate order
 export const validateOrder = (data) => {
   if (!data.customerName?.trim()) {
     return {
@@ -7,18 +8,21 @@ export const validateOrder = (data) => {
       message: "Customer name is required!",
     };
   }
+
   if (!data.customerPhone?.trim()) {
     return {
       valid: false,
       message: "Customer PHone number is required!",
     };
   }
+
   if (!data.customerAddress?.trim()) {
     return {
       valid: false,
       message: "Customer address is required!",
     };
   }
+
   if (!Array.isArray(data.items)) {
     return {
       valid: false,
@@ -106,10 +110,12 @@ export const isValidStatusTransition = (currentStatus, newStatus) => {
   return validTransition[currentStatus]?.includes(newStatus) || false;
 };
 
+// get a order
 export const getOrder = async (orderId) => {
   try {
     const ordersCollection = getCollection("orders");
     const order = await ordersCollection.findOne({ orderId: orderId });
+
     return order;
   } catch (error) {
     console.error(error);

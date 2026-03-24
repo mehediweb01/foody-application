@@ -8,8 +8,7 @@ import {
 } from "../utils/helpers.js";
 
 export const orderHandler = (io, socket) => {
-  console.log(`User ${socket.id} connected`);
-
+  // place order
   socket.on("placeOrder", async (data, callback) => {
     try {
       const validation = validateOrder(data);
