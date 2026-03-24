@@ -3,8 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import http from "http";
 import { Server } from "socket.io";
-import { generateOrderId } from "../utils/helpers.js";
-import { connectDB } from "./config/connectDB.js";
+import { connectDB } from "./config/database.js";
 import { orderHandler } from "./socket/orderHandler.js";
 
 dotenv.config();
@@ -22,10 +21,6 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
   socket.emit("connected", `User connected: ${socket.id}`);
-
-  //order id generator
-  const orderId = generateOrderId();
-  console.log(orderId);
 
   // handing the order
   orderHandler(io, socket);
