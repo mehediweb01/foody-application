@@ -1,3 +1,5 @@
+import { getCollection } from "../config/database";
+
 export const validateOrder = (data) => {
   if (!data.customerName?.trim()) {
     return {
@@ -87,4 +89,30 @@ export const createOrderDocument = (orderData, orderId, totals) => {
     createdAt: new Date(),
     updatedAt: new Date(),
   };
+};
+
+// valid status
+export const isValidStatusTransition = (currentStatus, newStatus) => {
+  const validTransition = {
+    pending: ["confirmed", "cancelled"],
+    confirmed: ["preparing", "cancelled"],
+    preparing: ["ready", "cancelled"],
+    ready: ["out_for_delivery", "cancelled"],
+    out_for_delivery: ["delivered"],
+    delivered: [],
+    cancelled: [],
+  };
+
+  return validTransition[currentStatus]?.includes(newStatus) || false;
+};
+
+export const getOrder = async (orderId) => {
+  try {
+    const ordersCollection = getCollection("orders");
+    const order = await ordersCollection.findOne({ orderId: orderId });
+    return order;
+  } catch (error) {
+    console.error(error);
+    throw new error(error.message);
+  }
 };
