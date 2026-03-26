@@ -123,4 +123,45 @@ export const orderHandler = (io, socket) => {
       callback({ success: false, message: error.message });
     }
   });
+
+  // admin events
+
+  // admin login
+  socket.on("adminLogin", async (data, callback) => {
+    try {
+      if (data.password === process.env.ADMIN_PASSWORD) {
+        socket.isAdmin = true;
+        socket.join("admins");
+        console.log(`Admin ${socket.id} logged in.`);
+        callback({ success: true });
+      } else {
+        callback({ success: false, message: "Unauthorized!" });
+      }
+    } catch (error) {
+      callback({ success: false, message: error.message });
+      console.error(`Error logging in admin: ${error}`);
+    }
+  });
+
+  // admin get all order
+  socket.on("getAllOrder", async (data, callback) => {
+    try {
+      if (!socket.isAdmin) {
+        callback({ success: false, message: "Unauthorized!" });
+      }
+
+      const orderCollection = getCollection("orders");
+      const filter = data.status ? { status: data.status } : {};
+      const orders = await orderCollection
+        .find(filter)
+        .sort({ createdAt: -1 })
+        .limit(20)
+        .toArray();
+
+      callback({ success: true, orders });
+    } catch (error) {
+      callback({ success: false, message: error.message });
+      console.error(`Error getting orders: ${error}`);
+    }
+  });
 };
