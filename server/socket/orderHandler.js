@@ -400,5 +400,3 @@ export const orderHandler = (io, socket) => {
     }
   });
 };
-
-// next video: video no- 13
