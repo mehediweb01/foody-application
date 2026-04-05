@@ -353,6 +353,35 @@ export const orderHandler = (io, socket) => {
     }
   });
 
+  // Set Estimated Time
+  socket.on("setEstimatedTime", async (data, callback) => {
+    try {
+      if (!socket.isAdmin) {
+        return callback({ success: false, message: "Unauthorized" });
+      }
+
+      const ordersCollection = getCollection("orders");
+      const result = await ordersCollection.findOneAndUpdate(
+        { orderId: data.orderId },
+        { $set: { estimatedTime: data.estimatedTime, updatedAt: new Date() } },
+        { returnDocument: "after" },
+      );
+
+      if (result) {
+        io.to(`order-${data.orderId}`).emit("estimatedTimeUpdated", {
+          orderId: data.orderId,
+          estimatedTime: data.estimatedTime,
+        });
+        callback({ success: true, order: result });
+      } else {
+        callback({ success: false, message: "Order not found" });
+      }
+    } catch (error) {
+      console.error("❌ Set time error:", error);
+      callback({ success: false, message: "Failed to update time" });
+    }
+  });
+
   // live stats
   socket.on("getLiveStats", async (data, callback) => {
     try {
@@ -397,6 +426,14 @@ export const orderHandler = (io, socket) => {
         message: error.message || "Failed to get live stats!",
       });
       console.error(`Error getting live stats: ${error}`);
+    }
+  });
+
+  // Disconnect
+  socket.on("disconnect", () => {
+    console.log(`👋 User disconnected: ${socket.id}`);
+    if (socket.isAdmin) {
+      socket.to("admins").emit("adminDisconnected", { adminId: socket.id });
     }
   });
 };

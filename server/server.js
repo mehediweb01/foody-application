@@ -20,7 +20,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
-  socket.emit("connected", `User connected: ${socket.id}`);
+  socket.emit("connected", { message: `User connected: ${socket.id}` });
 
   // handing the order
   orderHandler(io, socket);
